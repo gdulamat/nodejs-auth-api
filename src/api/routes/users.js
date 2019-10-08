@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.route('/register').post(UsersController.register);
 router.route('/register/:code([a-fA-F0-9]{60})').get(UsersController.confirmRegistration);
-router.route('/login').get(UsersController.login);
+router.route('/login').post(UsersController.login);
 
 module.exports = router;
