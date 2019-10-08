@@ -5,10 +5,6 @@ const bcrypt = require('bcrypt');
 const Mailer = require('../../modules/mailer/mailer');
 const jwt = require('jsonwebtoken');
 
-class User {
-    
-}
-
 class UsersController {
 
     static async register(req, res, next) {
@@ -66,6 +62,23 @@ class UsersController {
     }
 
     static async login(req, res, next) {
+
+        try {
+            const { email, password } = req.body;
+            const { password: dbPassword } = await UsersDAO.getUser({"email": email});
+            let token;
+
+            if(await bcrypt.compare(password, dbPassword)) {
+                //send token to user on successful login
+                token = await jwt.sign({user: email}, process.env.SECRET, {expiresIn: '30d'});
+                return res.json({token: `Bearer ${token}`});
+            } else {
+                throw new Error('Damn it feels good to be a gangsta');
+            }
+
+        } catch(e) {
+            return res.json({ login: `Login error: invalid username or password` });
+        }
 
     }
 }
