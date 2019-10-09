@@ -11,16 +11,17 @@ class UsersDAO {
         try {
             users = await dbConn.db(process.env.DB_NAME).collection('users');
             logger("Got users collection in user-dao");
+            return;
         } catch(e) {
             logger(`Error on getting users colletion: ${e.message}`);
+            return;
         }
     }
 
     static async createUser({email, date, password}) {
-        let result;
 
         try {
-            result = await users.insertOne({email, date, password});
+            await users.insertOne({email, date, password});
             return {success: true};
         } catch(e) {
             logger(`Error on creating user: ${e.message}`);
@@ -33,10 +34,9 @@ class UsersDAO {
      * @returns {Object}
      */
     static async getUser(query) {
-        let user;
 
         try {
-            user = await users.findOne(query);
+            const user = await users.findOne(query);
             return user;
         } catch (e) {
             logger(`Error on getting user: ${e.message}`);

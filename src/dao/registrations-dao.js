@@ -82,8 +82,10 @@ class RegistrationsDAO {
         try {
             await registrations.deleteMany({"date.registrationTime": {$lt: new Date(Date.now() - 3 * 60 * 60 * 1000)}});
             logger(`Outdated removed`);
+            return {success: true};
         } catch(e) {
             logger(`Error on removing registrations: ${e.message}`);
+            return {error: e.message}
         }
     }
 }
