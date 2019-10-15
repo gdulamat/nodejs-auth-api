@@ -25,8 +25,8 @@ class RegistrationsDAO {
      * @returns {Object}
      */
     static async createRegistration(email, password, code) {
-        let filter = {"email": email};
-        let update = {
+        const filter = {"email": email};
+        const update = {
             $currentDate: {
                 "date.registrationTime": true
             },
@@ -53,12 +53,10 @@ class RegistrationsDAO {
      * @param {String} code 
      */
     static async getRegistration(code) {
-        let registrationData;
         try {
-            registrationData = await registrations.findOne({"code": code}, {projection: {_id: 0}});
+            const registrationData = await registrations.findOne({"code": code}, {projection: {_id: 0}});
             return registrationData;
         } catch(e) {
-            console.log(e);
             return {error: e.message};
         }
     }

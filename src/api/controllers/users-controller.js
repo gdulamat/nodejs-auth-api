@@ -79,7 +79,22 @@ class UsersController {
             }
 
         } catch(e) {
-            return res.json({ error: `Login error: invalid username or password` });
+            return res.status(401).json({ error: `Login error: invalid username or password` });
+        }
+    }
+
+    static async updateUserData(req, res, next) {
+        try {
+            const {user} = req;
+            if(user) {
+                const response = await UsersDAO.updateUser(user, req.body);
+                return res.json(response);
+            } else {
+                throw new Error('Authentication failed');
+            }
+            
+        } catch(e) {
+            return res.status(401).json({error: `Error: ${e.message}`});
         }
     }
 }

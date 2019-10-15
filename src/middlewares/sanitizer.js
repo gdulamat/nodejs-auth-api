@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 const regexp = /[(<>"'$+{}=`&]/ig;
 
 /*
@@ -29,12 +29,17 @@ const map = {
     '$': '&#36;',
 };
 
-async function sanitizer (req, res, next) {
-    for(let key in req.body) {
-        if(typeof req.body[key] === "string" && key !== "password"){
-            req.body[key] = req.body[key].replace(regexp, (match) => (map[match])).trim();
+async function sanitize(obj) {
+    for(let key in obj) {
+        if(typeof obj[key] === 'string' && key !== "password") {
+            obj[key] = obj[key].replace(regexp, (match) => (map[match])).trim();
         }
+        typeof obj[key] === 'object' && sanitize(obj[key]);
     }
+}
+
+async function sanitizer (req, res, next) {
+    sanitize(req.body);
     next();
 }
 

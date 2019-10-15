@@ -18,7 +18,12 @@ class UsersDAO {
         }
     }
 
-    static async createUser({email, date, password}) {
+    /**
+     * 
+     * @param {Object} userData 
+     */
+    static async createUser(userData) {
+        const {email, date, password} = userData;
 
         try {
             await users.insertOne({email, date, password});
@@ -41,6 +46,35 @@ class UsersDAO {
         } catch (e) {
             logger(`Error on getting user: ${e.message}`);
             return {error: e.message};
+        }
+    }
+
+    /**
+     * 
+     * @param {String} email 
+     * @param {Object} updateData 
+     */
+    static async updateUser(email, updateData) {
+
+        const filter = {"email": email};
+
+        const update = {
+            $currentDate: {
+                "lastEdited.date": true
+            },
+            $set: {
+                ...updateData,
+                "lastEdited.offset": (new Date).getTimezoneOffset()
+            }
+        }
+        
+        try {
+            await users.updateOne(filter, update, {upsert: true});
+            logger(`Edit user data: ${email}`);
+            return {success: true};
+        } catch(e) {
+            logger(`Error on edit user data: ${e.message}`);
+            return {error: e.message}
         }
     }
 }
