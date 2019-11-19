@@ -26,14 +26,13 @@ class UsersController {
             //insert registration in db
             const registration = await RegistrationsDAO.createRegistration(email, hashedPass, code);
             if("error" in registration) throw new Error('DB error');
-    
             //send activation code to user
             const registrationResult = await Mailer.sendMail(email, 'Potwierdzenie rejestracji', `http://localhost:${process.env.PORT}/api/v1/users/register/${code}`);
     
             return res.json(registrationResult);
 
         } catch(e) {
-            return res.json({ error: `Error: ${e.message}` });
+            return res.status(400).json({ error: `Error: ${e.message}` });
         }
     }
 

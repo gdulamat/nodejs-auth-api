@@ -7,9 +7,9 @@ class UsersDAO {
      * 
      * @param {Object} dbConn reference to the connected DB
      */
-    static async getCollections(dbConn) {
+    static async getCollections(dbConn, dbName) {
         try {
-            users = await dbConn.db(process.env.DB_NAME).collection('users');
+            users = await dbConn.db(dbName).collection('users');
             logger("Got users collection in user-dao");
             return;
         } catch(e) {
@@ -74,6 +74,17 @@ class UsersDAO {
             return {success: true};
         } catch(e) {
             logger(`Error on edit user data: ${e.message}`);
+            return {error: e.message}
+        }
+    }
+
+    static async removeUser(email) {
+        try {
+            let a = await users.deleteOne({"email": email});
+            logger(`User ${email} removed`);
+            return {success: true};
+        } catch(e) {
+            logger(`Error on removing user: ${e.message}`);
             return {error: e.message}
         }
     }

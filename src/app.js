@@ -11,5 +11,8 @@ app.use(sanitizer);
 app.use(jwtAuthentication)
 
 app.use('/api/v1/users', usersRouter);
+app.get('/', (req, res) =>{
+    res.status(200).send("ok");
+});
 
 module.exports = app;

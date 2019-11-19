@@ -8,9 +8,9 @@ class RegistrationsDAO {
      * 
      * @param {Object} dbConn 
      */
-    static async getCollections(dbConn) {
+    static async getCollections(dbConn, dbName) {
         try {
-            registrations = await dbConn.db(process.env.DB_NAME).collection('registrations');
+            registrations = await dbConn.db(dbName).collection('registrations');
             logger("Got registrations collection in registrations-dao");
         } catch(e) {
             logger(`Error on getting users colletion: ${e.message}`);
