@@ -18,7 +18,7 @@ class UsersController {
             if(typeof email !== "string" || typeof password !== "string") throw new Error('Incorrect type of data, required type is string');
             if(!validEmail.test(email)) throw new Error('Invalid email format');
             if(!validPassword.test(password)) throw new Error('Password must containt at least: 1 lowercase char, 1 uppercase char, 1 number, 1 special character');
-            if(await UsersDAO.getUser({"email": email})) throw new Error('Email is already registered');
+            if(await UsersDAO.getUser({"email": email}, {"email": 1})) throw new Error('Email is already registered');
 
             const hashedPass = await bcrypt.hash(password, 10);
             const code = await randomBytesString(60);
@@ -46,7 +46,7 @@ class UsersController {
             //validation phase
             if(!registrationData) throw new Error('Invalid code');
             if("error" in registrationData) throw new Error('DB error');
-            if(await UsersDAO.getUser({"email": email})) throw new Error('Email is already registered');
+            if(await UsersDAO.getUser({"email": email}, {"email": 1})) throw new Error('Email is already registered');
 
             //move data to the users collection and remove registration
             const createResult = await UsersDAO.createUser(registrationData);
@@ -66,7 +66,7 @@ class UsersController {
 
         try {
             const { email, password } = req.body;
-            const { password: dbPassword } = await UsersDAO.getUser({"email": email});
+            const { password: dbPassword } = await UsersDAO.getUser({"email": email}, {"password": 1});
             let token;
 
             if(await bcrypt.compare(password, dbPassword)) {
@@ -82,6 +82,21 @@ class UsersController {
         }
     }
 
+    static async getUserData(req, res, next) {
+        try {
+            const {user} = req;
+            if(user) {
+                const response = await UsersDAO.getUser({"email": user}, {"password": 0});
+                return res.json(response);
+            } else {
+                throw new Error('Access denied');
+            }
+            
+        } catch(e) {
+            return res.status(401).json({error: `Error: ${e.message}`});
+        }
+    }
+
     static async updateUserData(req, res, next) {
         try {
             const {user} = req;
@@ -89,7 +104,7 @@ class UsersController {
                 const response = await UsersDAO.updateUser(user, req.body);
                 return res.json(response);
             } else {
-                throw new Error('Authentication failed');
+                throw new Error('Access denied');
             }
             
         } catch(e) {

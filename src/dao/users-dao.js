@@ -36,12 +36,13 @@ class UsersDAO {
 
     /**
      * @param {Object} query
+     * @param {Object} projection
      * @returns {Object}
      */
-    static async getUser(query) {
+    static async getUser(query, projection = {}) {
 
         try {
-            const user = await users.findOne(query);
+            const user = await users.findOne(query, {projection});
             return user;
         } catch (e) {
             logger(`Error on getting user: ${e.message}`);
