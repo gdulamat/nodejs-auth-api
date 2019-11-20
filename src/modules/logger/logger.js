@@ -2,18 +2,11 @@
 const fs = require('fs');
 const path = require('path');
 
-class LogDate extends Date {
-    
-}
-
-
-
 /**
  * 
  * @param {String} text 
  * @param {Function} callback 
  */
-
 async function writeLog(text, callback = () => null) {
     const date = new Date();
     let year = date.getFullYear().toString();
@@ -29,7 +22,7 @@ async function writeLog(text, callback = () => null) {
     minutes.length === 1 && (minutes = `0${minutes}`);
     seconds.length === 1 && (seconds = `0${seconds}`);
 
-    const logPath = path.join(process.env.LOGS_DIR, `log${day}${month}${year}`)
+    const logPath = path.join(process.env.LOGS_DIR, `log${year}${month}${day}`);
     
     fs.appendFile(logPath, `${hours}:${minutes}:${seconds}: ${text}\n`, (err) => {
         err && console.log(`Error on writing log: ${err.message}`);
